@@ -40,7 +40,7 @@ def join_game(address, display_name, return_addr):
 
 def make_move(address, secret_id, action, value=0):
     data = {}
-    data['player_id'] = secret_id
+    data['secret_id'] = secret_id
     data['action'] = action
     data['value'] = value
 
