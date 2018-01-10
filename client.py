@@ -4,6 +4,7 @@ from flask import Flask,jsonify,request
 import requests
 import threading
 import json
+import sys
 
 app = Flask(__name__)
 
@@ -15,9 +16,6 @@ def game_info():
     except Exception(e):
         print(e)
         return jsonify(status='ERROR',message=str(e))
-
-def server_thread():
-    app.run()
 
 def post(addr, data):
     header = {'Content-Type' : 'application/json'}
@@ -52,9 +50,16 @@ def make_move(address, secret_id, action, value=0):
     res = post(address+'/game', data)
     print(res)
 
+def server_thread(port):
+    app.run(port=port)
+
 if __name__ == "__main__":
     # Start web server thread
-    threading.Thread(target=server_thread).start()
+    port = 5000
+    if len(sys.argv) > 1:
+        port = int(sys.argv[1])
+
+    threading.Thread(target=server_thread, args=(port,)).start()
 
     server_addr = ""
     secret_id = ""
@@ -66,13 +71,13 @@ if __name__ == "__main__":
     while True:
         action = input("kevpoker> ").lower().split()
         if "bet" == action[0]:
-            make_move(server_addr, secret_id, action[0], action[1])
+            make_move(server_addr, secret_id, action[0], int(action[1]))
         elif action[0] in ["check", "fold"]:
             make_move(server_addr, secret_id, action[0])
         elif "join" == action[0]:
             join_game(server_addr, action[1], my_addr)
         elif "config" == action[0]:
-            configure_game(server_addr, action[1], action[2])
+            configure_game(server_addr, action[1], int(action[2]))
         elif "server" == action[0]:
             server_addr = action[1]
         elif "secret" == action[0]:
