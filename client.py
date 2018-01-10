@@ -1,7 +1,9 @@
-from flask import Flask,json,jsonify,request
-#import requests
+#!/usr/bin/env python3
+
+from flask import Flask,jsonify,request
+import requests
 import threading
-import urrlib.request as urllib2
+import json
 
 app = Flask(__name__)
 
@@ -9,9 +11,6 @@ app = Flask(__name__)
 def game_info():
     try:
         print(request.json)
-        #ingame_id = request.json["ingame_id"]
-        #secret_id = request.json["secret_id"]
-        #starting_stack = request.json["starting_stack"]
         return jsonify(status="OK")
     except Exception(e):
         print(e)
@@ -21,9 +20,11 @@ def server_thread():
     app.run()
 
 def post(addr, data):
-    req = urllib2.Request(address)
-    req.add_header('Content-Type', 'application/json')
-    response = urllib2.urlopen(req, json.dumps(data))
+    header = {'Content-Type' : 'application/json'}
+    response = requests.post(addr, headers=header, json=data)
+    #req = urllib2.Request(addr)
+    #req.add_header('Content-Type', 'application/json')
+    #response = urllib2.urlopen(req, json.dumps(data))
     return response
 
 def configure_game(address, message, value):
@@ -31,7 +32,7 @@ def configure_game(address, message, value):
     data['config'] = message
     data['value']  = value
 
-    res = post(address,data)
+    res = post(address+'/config',data)
     print(res)
 
 def join_game(address, display_name, return_addr):
@@ -39,7 +40,7 @@ def join_game(address, display_name, return_addr):
     data['name'] = display_name
     data['address'] = return_addr
 
-    res = post(address, data)
+    res = post(address+'/reg', data)
     print(res)
 
 def make_move(address, secret_id, action, value=0):
@@ -48,7 +49,7 @@ def make_move(address, secret_id, action, value=0):
     data['action'] = action
     data['value'] = value
 
-    res = post(address, data)
+    res = post(address+'/game', data)
     print(res)
 
 if __name__ == "__main__":
@@ -58,6 +59,9 @@ if __name__ == "__main__":
     server_addr = ""
     secret_id = ""
     my_addr = ""
+
+    print("")
+    print("")
 
     while True:
         action = input("kevpoker> ").lower().split()
