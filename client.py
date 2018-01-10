@@ -8,10 +8,19 @@ import sys
 
 app = Flask(__name__)
 
+secret_id = ""
+
 @app.route('/player', methods=['POST'])
 def game_info():
+    global secret_id
+
     try:
         print(request.json)
+
+        if request.json["info"] == "PlayerPrivateInfo":
+            secret_id = request.json["secret_id"]
+            print(secret_id)
+
         return jsonify(status="OK")
     except Exception(e):
         print(e)
@@ -58,9 +67,9 @@ if __name__ == "__main__":
 
     threading.Thread(target=server_thread, args=(port,)).start()
 
-    server_addr = ""
-    secret_id = ""
-    my_addr = ""
+    # Defaults are based on my local testing - k2bd
+    server_addr = "http://localhost:8000"
+    my_addr = "http://localhost:"+str(port)
 
     print("")
     print("")
@@ -75,7 +84,10 @@ if __name__ == "__main__":
             elif "join" == action[0]:
                 join_game(server_addr, action[1], my_addr)
             elif "config" == action[0]:
-                configure_game(server_addr, action[1], int(action[2]))
+                if action[1] in ["start"]:
+                    configure_game(server_addr, action[1], 0)
+                else:
+                    configure_game(server_addr, action[1], int(action[2]))
             elif "server" == action[0]:
                 server_addr = action[1]
             elif "secret" == action[0]:
