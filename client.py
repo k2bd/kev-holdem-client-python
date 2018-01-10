@@ -20,9 +20,6 @@ def game_info():
 def post(addr, data):
     header = {'Content-Type' : 'application/json'}
     response = requests.post(addr, headers=header, json=data)
-    #req = urllib2.Request(addr)
-    #req.add_header('Content-Type', 'application/json')
-    #response = urllib2.urlopen(req, json.dumps(data))
     return response
 
 def configure_game(address, message, value):
@@ -70,19 +67,20 @@ if __name__ == "__main__":
 
     while True:
         action = input("kevpoker> ").lower().split()
-        if "bet" == action[0]:
-            make_move(server_addr, secret_id, action[0], int(action[1]))
-        elif action[0] in ["check", "fold"]:
-            make_move(server_addr, secret_id, action[0])
-        elif "join" == action[0]:
-            join_game(server_addr, action[1], my_addr)
-        elif "config" == action[0]:
-            configure_game(server_addr, action[1], int(action[2]))
-        elif "server" == action[0]:
-            server_addr = action[1]
-        elif "secret" == action[0]:
-            secret_id = action[1]
-        elif "return" == action[0]:
-            my_addr = action[1]
-        else:
-            print("Invalid action")
+        if len(action) > 0:
+            if "bet" == action[0]:
+                make_move(server_addr, secret_id, action[0], int(action[1]))
+            elif action[0] in ["check", "fold"]:
+                make_move(server_addr, secret_id, action[0])
+            elif "join" == action[0]:
+                join_game(server_addr, action[1], my_addr)
+            elif "config" == action[0]:
+                configure_game(server_addr, action[1], int(action[2]))
+            elif "server" == action[0]:
+                server_addr = action[1]
+            elif "secret" == action[0]:
+                secret_id = action[1]
+            elif "return" == action[0]:
+                my_addr = action[1]
+            else:
+                print("Invalid action")
